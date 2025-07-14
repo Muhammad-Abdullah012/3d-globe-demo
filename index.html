@@ -35,6 +35,7 @@
   </head>
   <body>
     <script type="module">
+      import { OrbitControls } from "three/addons/controls/OrbitControls.js";
       import * as THREE from "three";
 
       const scene = new THREE.Scene();
@@ -51,6 +52,17 @@
       const renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
+
+      // OrbitControls: allow rotation, disable zoom/pan
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableZoom = false;
+      controls.enablePan = false;
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.rotateSpeed = 0.4;
+      controls.minPolarAngle = 0;
+      controls.maxPolarAngle = Math.PI;
+
 
       // Lighting
       scene.add(new THREE.AmbientLight(0xffffff, 0.6));
@@ -94,7 +106,11 @@
         // Animate
         function animate() {
           requestAnimationFrame(animate);
-          globe.rotation.y += 0.0015; // Slow, continuous rotation
+          if (!controls.dragging) {
+            globe.rotation.y += 0.0015;
+          }
+
+          controls.update();
           renderer.render(scene, camera);
         }
 
